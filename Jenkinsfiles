@@ -1,9 +1,40 @@
 pipeline{
+    agent any
+    environment{
+        APP_NAME= "reddit-clone-app"
+    }
     stages{
-        stage(){
+        stage('clean workspace'){
             steps{
-                
+                cleanWs()
             }
         }
+        stage('checkout from scm'){
+            steps{
+                git branch:'main',credentialsId: 'github', url:'https://github.com/rahul6364/reddit-gitOps.git'
+            }
+        }
+        stage('update the deployment tags'){
+            steps{
+                sh ''' 
+                    cat deployment.yml
+                    sed -i 's/${APP_NAME}.*/${APP_NAME}:${IMAGE_TAG}/g' deployment.yaml
+                    cat deployment.yml
+                '''
+            }
+        }
+        stage("Push the changed deployment file to GitHub") {
+            steps {
+                sh """
+                    git config --global user.name "rahul6364"
+                    git config --global user.email "rahul63643161@gmail.com"
+                    git add deployment.yaml
+                    git commit -m "Updated Deployment Manifest"
+                """
+                withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
+                    sh "git push https://github.com/rahul6364/reddit-gitOps.git main"
+                }
+            }
+         }
     }
 }
