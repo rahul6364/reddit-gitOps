@@ -1,24 +1,23 @@
-pipeline{
+pipeline {
     agent any
-    environment{
-        APP_NAME= "reddit-clone-app"
+    environment {
+        APP_NAME = "reddit-clone-app"
     }
-    stages{
-        stage('clean workspace'){
-            steps{
+    stages {
+        stage('Clean Workspace') {
+            steps {
                 cleanWs()
             }
         }
-        stage('checkout from scm'){
-            steps{
-                git branch:'main',credentialsId: 'github', url:'https://github.com/rahul6364/reddit-gitOps.git'
+        stage('Checkout from SCM') {
+            steps {
+                git branch: 'main', credentialsId: 'github', url: 'https://github.com/rahul6364/reddit-gitOps.git'
             }
         }
-        stage('update the deployment tags'){
-            steps{
-                sh ''' 
+        stage('Update the deployment tags') {
+            steps {
+                sh '''
                     cat deployment.yml
-                    sed -i 's/${APP_NAME}.*/${APP_NAME}:${IMAGE_TAG}/g' deployment.yml
                     sed -i "s#image: .*${APP_NAME}:.*#image: rahul6364/${APP_NAME}:${IMAGE_TAG}#g" deployment.yml
                     echo "After update:"
                     cat deployment.yml
@@ -31,15 +30,13 @@ pipeline{
                     sh '''
                         git config --global user.name "rahul6364"
                         git config --global user.email "rahul63643161@gmail.com"
-
                         git add deployment.yml
                         git commit -m "Updated Deployment Manifest" || echo "No changes to commit"
-
-                        git pull --rebase https://$GIT_USER:$GIT_PASS@github.com/rahul6364/reddit-gitOps.git main
-                        git push https://$GIT_USER:$GIT_PASS@github.com/rahul6364/reddit-gitOps.git main
+                        git pull --rebase
+                        git push https://${GIT_USER}:${GIT_PASS}@github.com/rahul6364/reddit-gitOps.git main
                     '''
                 }
             }
-         }
+        }
     }
 }
