@@ -20,10 +20,10 @@ pipeline {
         stage('Update the deployment tags') {
             steps {
                 sh '''
-                    cat deployment.yml
-                    sed -i "s#image: .*${APP_NAME}:.*#image: rahul6364/${APP_NAME}:${IMAGE_TAG}#g" deployment.yml
+                    cat k8s/deployment.yml
+                    sed -i "s#image: .*${APP_NAME}:.*#image: rahul6364/${APP_NAME}:${IMAGE_TAG}#g" k8s/deployment.yml
                     echo "After update:"
-                    cat deployment.yml
+                    cat k8s/deployment.yml
                 '''
             }
         }
@@ -33,7 +33,7 @@ pipeline {
                     sh '''
                         git config --global user.name "rahul6364"
                         git config --global user.email "rahul63643161@gmail.com"
-                        git add deployment.yml
+                        git add k8s/deployment.yml
                         git commit -m "Updated Deployment Manifest" || echo "No changes to commit"
                         git pull --rebase
                         git push https://${GIT_USER}:${GIT_PASS}@github.com/rahul6364/reddit-gitOps.git main
