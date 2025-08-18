@@ -21,7 +21,7 @@ pipeline {
             steps {
                 sh '''
                     cat k8s/deployment.yml
-                    sed -i "s#image: .*${APP_NAME}:.*#image: rahul6364/${APP_NAME}:${IMAGE_TAG}#g" k8s/deployment.yml
+                    sed -i "s#image: .*${APP_NAME}:.*#image:  rahul6364/${APP_NAME}:${IMAGE_TAG}#g" k8s/deployment.yml
                     echo "After update:"
                     cat k8s/deployment.yml
                 '''
